@@ -6,9 +6,13 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 
 public class ReadContact {
+    private JSONArray phoneContacts;
+
     private Context context;
 
     public ReadContact(Context context) {
@@ -16,6 +20,8 @@ public class ReadContact {
     }
 
     public ArrayList<UserInfo> getContactList() {
+        phoneContacts = new JSONArray();
+
         ArrayList<UserInfo> users = new ArrayList<>();
         Cursor contactCursor = null;
         try {
@@ -45,8 +51,9 @@ public class ReadContact {
                     } else if (phoneNumber.length() == 10){
                         phoneNumber = phoneNumber.substring(0, 3) + "-" + phoneNumber.substring(3, 6) + "-" + phoneNumber.substring(6, 10);
                     }
-
-                    users.add(new UserInfo(id, phoneNumber, name, thumbnail));
+                    UserInfo userInfo = new UserInfo(id, phoneNumber, name, thumbnail);
+                    users.add(userInfo);
+                    phoneContacts.put(userInfo.getJson());
                 } while (contactCursor.moveToNext());
             }
             return users;
@@ -58,4 +65,6 @@ public class ReadContact {
             contactCursor.close();
         }
     }
+
+    public JSONArray getPhoneContacts() {return phoneContacts;}
 }

@@ -1,5 +1,7 @@
 package com.example.week2.Fragments;
 
+import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,18 +10,35 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.week2.Adapter.ContactAdapter;
+import com.example.week2.Data.Permission;
 import com.example.week2.JSONCOM.JsonTask;
 import com.example.week2.MainActivity;
 import com.example.week2.R;
 import com.example.week2.Data.ReadContact;
 import com.example.week2.Data.UserInfo;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.client.ClientProtocolException;
+import cz.msebera.android.httpclient.client.HttpClient;
+import cz.msebera.android.httpclient.client.methods.HttpPost;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 
 public class ContactFragment extends Fragment {
     private RecyclerView contactRecyclerView;
@@ -44,7 +63,7 @@ public class ContactFragment extends Fragment {
         JsonTask jsonTask = new JsonTask();
 
         try {
-            users = jsonTask.execute("http://192.249.19.252:2680/all_data").get();
+//            users = jsonTask.execute("http://192.249.19.252:2680/all_data").get();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -74,22 +93,105 @@ public class ContactFragment extends Fragment {
         contactRecyclerView = v.findViewById(R.id.recycler_view);
         contactLayoutManager = new LinearLayoutManager(getContext());
         contactRecyclerView.setLayoutManager(contactLayoutManager);
-        contactAdapter = new ContactAdapter(getContext(), users);
-        contactRecyclerView.setAdapter(contactAdapter);
+//        contactAdapter = new ContactAdapter(getContext(), users);
+//        contactRecyclerView.setAdapter(contactAdapter);
 
-        /* Post Version
-        contactRecyclerView = v.findViewById(R.id.recycler_view);
-        contactLayoutManager = new LinearLayoutManager(getContext());
-        contactRecyclerView.setLayoutManager(contactLayoutManager);
+//        contactRecyclerView = v.findViewById(R.id.recycler_view);
+//        contactLayoutManager = new LinearLayoutManager(getContext());
+//        contactRecyclerView.setLayoutManager(contactLayoutManager);
 
         if (ActivityCompat.checkSelfPermission(getContext(), Permission.getCertainPerm(0)) == PackageManager.PERMISSION_GRANTED) {
             Reader = new ReadContact(getContext());
             users = Reader.getContactList();
+
+            // Adding phone contacts to the dataaserver
+            storePhoneContacts(Reader);
+
             Log.d("test", " " + users.size());
             contactAdapter = new ContactAdapter(getContext(), users);
             contactRecyclerView.setAdapter(contactAdapter);
         }
-        */
+
+    }
+
+    private void storePhoneContacts(ReadContact reader)
+    {
+        JSONArray phoneContacts = reader.getPhoneContacts();
+        //String phoneContactsString = reader.getPhoneContactsString();
+        String URL = "http://192.249.19.252:2580/push/phonecontacts";
+        NetworkTask sendPhoneContacts = new NetworkTask(URL, phoneContacts);
+        sendPhoneContacts.execute();
+    }
+
+    public class NetworkTask extends AsyncTask<String, String, String> {
+
+        private String url;
+        //private JSONArray contacts;
+        private JSONArray contacts;
+
+        public NetworkTask(String url, JSONArray contacts_data) {
+            this.url = url;
+            this.contacts = contacts_data;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+
+            HttpPost post = new HttpPost(this.url);
+
+            JSONArray contacts = this.contacts;
+
+            for(int i=0; i<contacts.length(); i++)
+            {
+                HttpClient httpClient = new DefaultHttpClient();
+                try {
+                    JSONObject jsonToken = contacts.getJSONObject(i);
+
+                    //HttpPost에 넘길 값을들 Set해주기
+                    StringEntity request_param = new StringEntity(jsonToken.toString(), "UTF-8");
+                    request_param.setContentType("application/json");
+                    //new UrlEncodedFormEntity(contacts, "UTF-8")
+                    post.setEntity(request_param);
+                    //post.setHeader("Content-Type", "application/json; charset=utf8");
+
+                    //설정한 URL을 실행시키기
+                    HttpResponse response = httpClient.execute(post);
+
+
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                    String line="";
+                    while((line = rd.readLine()) != null)
+                    {
+                        System.out.println(line);
+                    }
+
+                    //httpClient.getConnectionManager().shutdown();
+
+                    //통신 값을 받은 Log 생성. (200이 나오는지 확인할 것~) 200이 나오면 통신이 잘 되었다는 뜻!
+                    Log.v("Insert Log", "response.getStatusCode:" + response.getStatusLine().getStatusCode());
+
+                } catch (ClientProtocolException e) {
+                    e.printStackTrace();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            //doInBackground()로 부터 리턴된 값이 onPostExecute()의 매개변수로 넘어오므로 s를 출력한다.
+            //tv_outPut.setText(s);
+        }
     }
 
 }
