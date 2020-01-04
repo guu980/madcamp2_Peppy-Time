@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MadCamp2</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="search_keyword">키워드를 입력해 주세요.</string>
+</resources>
