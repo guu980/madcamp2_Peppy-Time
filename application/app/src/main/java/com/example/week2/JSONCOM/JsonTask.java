@@ -100,7 +100,6 @@ public class JsonTask extends AsyncTask<String, String, ArrayList<UserInfo>> {
             String id = jsonData.getString("id");
             String name = jsonData.getString("name");
             String phoneNumber = jsonData.getString("phoneNumber");
-//            String thumbNail = jsonData.getString("_id");
 
             userInfo = new UserInfo(id, phoneNumber, name, "");
         } catch (Exception e) {
