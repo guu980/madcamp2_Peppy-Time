@@ -20,9 +20,8 @@ import android.view.WindowManager;
 import com.example.week2.Data.UrlInfo;
 import com.example.week2.Data.Permission;
 import com.example.week2.Fragments.ContactFragment;
-import com.example.week2.Fragments.TripMainFragment;
 import com.example.week2.Fragments.GalleryFragment;
-import com.example.week2.Fragments.TripFragment;
+import com.example.week2.Fragments.PetFragment;
 import com.example.week2.XML.GetXML;
 import com.google.android.material.tabs.TabLayout;
 
@@ -38,8 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private MenuItem searchItem;
     private ContactFragment contact;
     private GalleryFragment gallery;
-    private TripFragment tripInfo;
-    private TripMainFragment empty;
+    private PetFragment pet;
     private final String[] permissions = Permission.getPermissions();
     private boolean isSearch = false;
     public Stack<OnBackKeyPressedListener> mFragmentBackStack = new Stack<>();
@@ -68,8 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         contact = new ContactFragment();
         gallery = new GalleryFragment();
-        tripInfo = new TripFragment();
-        empty = new TripMainFragment();
+        pet = new PetFragment();
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, contact).commit();
 
@@ -93,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
                     selected = gallery;
                 } else if (currentTabPosition == 2) {
                     searchItem.setVisible(true);
-                    selected = empty;
                     actionBar = getActionBar();
+                    selected = pet;
                 }
 
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selected).commit();
@@ -181,8 +178,8 @@ public class MainActivity extends AppCompatActivity {
 
                     getXML.execute(Integer.toString(UrlInfo.getCurrentPage()), UrlInfo.getKeyword());
 
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, tripInfo).addToBackStack(null).commit();
-                    getSupportFragmentManager().beginTransaction().detach(tripInfo).attach(tripInfo).commit();
+//                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, tripInfo).addToBackStack(null).commit();
+//                    getSupportFragmentManager().beginTransaction().detach(tripInfo).attach(tripInfo).commit();
 
                     isSearch = true;
                 }

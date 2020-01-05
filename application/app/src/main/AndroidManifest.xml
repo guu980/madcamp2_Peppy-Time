@@ -42,6 +42,7 @@
         </activity>
         <activity android:name="com.example.week2.TripDetailActivity"/>
         <activity android:name="com.example.week2.DetailActivity"/>
+        <activity android:name=".WalkActivity"/>
 
     </application>
 
