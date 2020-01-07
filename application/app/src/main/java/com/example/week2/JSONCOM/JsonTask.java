@@ -22,6 +22,7 @@ public class JsonTask extends AsyncTask<String, String, ArrayList<UserInfo>> {
 
     ArrayList <UserInfo> userInfos;
 
+
     @Override
     protected ArrayList<UserInfo> doInBackground(String... urls) {
         try {
