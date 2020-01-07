@@ -59,7 +59,6 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     class ContactViewHolder extends RecyclerView.ViewHolder {
         private TextView phoneNumber;
         private TextView name;
-        private ImageView thumbnail;
         private Button deleteButton;
         private Button callButton;
 
@@ -69,7 +68,6 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             super(itemView);
             phoneNumber = itemView.findViewById(R.id.phone_number);
             name = itemView.findViewById(R.id.name);
-            thumbnail = itemView.findViewById(R.id.user_thumbnail);
             deleteButton = itemView.findViewById(R.id.delete_button);
             callButton = itemView.findViewById(R.id.call_button);
             mainActivity = (MainActivity) context;
@@ -128,9 +126,6 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         ContactViewHolder viewHolder = (ContactViewHolder) holder;
         viewHolder.phoneNumber.setText(users.get(position).getPhoneNumber());
         viewHolder.name.setText(users.get(position).getName());
-        if (users.get(position).getThumbNail() != null) {
-            viewHolder.thumbnail.setImageURI(Uri.parse(users.get(position).getThumbNail()));
-        }
     }
 
     @Override
