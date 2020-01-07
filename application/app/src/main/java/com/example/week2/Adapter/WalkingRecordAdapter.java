@@ -1,6 +1,7 @@
 package com.example.week2.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.telephony.TelephonyManager;
@@ -25,6 +26,7 @@ import com.example.week2.Data.WalkingRecordInfo;
 import com.example.week2.MainActivity;
 import com.example.week2.R;
 import com.example.week2.Retrofit.RetrofitAPI;
+import com.example.week2.ShowPastPath;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -41,12 +43,12 @@ public class WalkingRecordAdapter extends RecyclerView.Adapter<RecyclerView.View
     private Context context;
     private Retrofit mRetrofit;
     private RetrofitAPI mRetrofitAPI;
+    private ImageView dogThumbnail;
 //    private MainActivity mainActivity;
 
     class WalkingRecordViewHolder extends RecyclerView.ViewHolder{
         private TextView locationInfo;
         private TextView dateInfo;
-        private ImageView dogThumbnail;
         private TextView totalTimeInfo;
         private TextView distanceInfo;
         private Button deleteButton;
@@ -76,6 +78,7 @@ public class WalkingRecordAdapter extends RecyclerView.Adapter<RecyclerView.View
                     notifyItemRangeChanged(getAdapterPosition(), walkingRecords.size());
                 }
             });
+
         }
     }
 
@@ -135,7 +138,7 @@ public class WalkingRecordAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         WalkingRecordAdapter.WalkingRecordViewHolder viewHolder = (WalkingRecordAdapter.WalkingRecordViewHolder) holder;
 
         if(position%2 == 1)
@@ -186,6 +189,19 @@ public class WalkingRecordAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         String distanceInfoString = walkingRecords.get(position).getTotalDistance();
         viewHolder.distanceInfo.setText(distanceInfoString + "km");
+
+        dogThumbnail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "시작 Lat: " + walkingRecords.get(position).getStartLat() +
+                        "시작 Long: " + walkingRecords.get(position).getStratLon() + "끝 Lat: " + walkingRecords.get(position).getEndLat() +
+                        "끝 Long: " + walkingRecords.get(position).getEndLon(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, ShowPastPath.class);
+                intent.putExtra("Position", new String[] {walkingRecords.get(position).getStartLat(), walkingRecords.get(position).getStratLon()
+                        , walkingRecords.get(position).getEndLat(), walkingRecords.get(position).getEndLon()});
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

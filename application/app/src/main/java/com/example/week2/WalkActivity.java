@@ -13,6 +13,8 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -62,9 +65,11 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
     private TMapView tMapView;
     private TMapData tMapData;
 
+    private LinearLayout linearLayoutTMap;
     private Button getCurrentBtn;
     private Button searchAroundBtn;
     private Button searchPath;
+    private Button homeBtn;
     private Button stopBtn;
     private TextView departure;
     private TextView arrival;
@@ -82,7 +87,7 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
 
     private ArrayList<Place> checkPoints;
 
-    private String address;
+    private Double totalLength;
 
     private LocationManager locationManager;
 
@@ -104,7 +109,7 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_walk);
 
-        LinearLayout linearLayoutTMap = findViewById(R.id.TMap_container);
+        linearLayoutTMap = findViewById(R.id.TMap_container);
         tMapView = new TMapView(getApplicationContext());
         tMapData = new TMapData();
 
@@ -127,14 +132,25 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
         searchPath = findViewById(R.id.path_search);
         searchPath.setOnClickListener(this);
 
+        homeBtn = findViewById(R.id.home);
+        homeBtn.setOnClickListener(this);
+
         stopBtn = findViewById(R.id.stop);
         stopBtn.setOnClickListener(this);
 
         pathRecyclerView = findViewById(R.id.path_container);
-        pathLayoutManager = new LinearLayoutManager(getApplicationContext());
+        pathLayoutManager = new LinearLayoutManager(this);
         pathRecyclerView.setLayoutManager(pathLayoutManager);
-    }
+        pathAdapter = new PathAdapter(path);
+        pathRecyclerView.setAdapter(pathAdapter);
 
+        tMapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
+            @Override
+            public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
+                Toast.makeText(getApplicationContext(), tMapMarkerItem.getTMapPoint().getLatitude() + ", " + tMapMarkerItem.getTMapPoint().getLongitude(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     private void getCurrentPlace() {
         if (Build.VERSION.SDK_INT >= 23 &&
@@ -182,161 +198,12 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
         markerItem.setCanShowCallout(true);
         Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), icon);
         markerItem.setIcon(bitmap);
+        markerItem.setCalloutRightButtonImage(bitmap);
         markerItem.setCalloutTitle(title);
         markerItem.setTMapPoint(point);
 
         return markerItem;
     }
-
-    public String getDeviceId()
-    {
-        TelephonyManager telephonyManager;
-        telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Permission.getCertainPerm(4)) != PackageManager.PERMISSION_GRANTED) {
-            return null;
-        }
-
-        String deviceId = telephonyManager.getDeviceId();
-        return deviceId;
-    }
-
-    private void setWalkingRetrofitInit() {
-        String baseUrl = "http://192.249.19.252:2580/";
-        mRetrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        mRetrofitAPI = mRetrofit.create(RetrofitAPI.class);
-    }
-
-    public void sendRecord() {
-        setWalkingRetrofitInit();
-        String deviceId = getDeviceId();
-
-        List<String> totalTime = getTotalTime(startDate, endDate);
-
-        Log.d("DEBUG", departurePosition.getLatitude() + ", " + departurePosition.getLongitude());
-        JsonObject walkingRecord = setWalkingRecord(String.valueOf(departurePosition.getLatitude())
-                , String.valueOf(departurePosition.getLongitude()), String.valueOf(arrivalPosition.getLatitude())
-                , String.valueOf(arrivalPosition.getLongitude()),
-                totalTime.get(0), totalTime.get(1), "3.0");
-        Call<JsonObject> walkingData = mRetrofitAPI.storeWalkingRecord(walkingRecord, deviceId);
-
-        Callback<JsonObject> mRetrofitCallback = new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Log.d("Retrofit Success", response.toString());
-                //Log.d(TAG, result);
-                if (response.body() != null) {
-                    Log.i("record sending","Success!!!");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                t.printStackTrace();
-                Log.e("Err", t.getMessage());
-            }
-        };
-
-        walkingData.enqueue(mRetrofitCallback);
-    }
-
-    public JsonObject setWalkingRecord(String startLatitude, String startLongitude, String endLatitude, String endLongitude, String usedHours, String usedMins, String distance)
-    {
-        JsonObject finalData = new JsonObject();
-
-        JsonObject start = new JsonObject();
-        start.addProperty("lat", startLatitude);
-        start.addProperty("lon", startLongitude);
-
-        JsonObject end = new JsonObject();
-        end.addProperty("lat", endLatitude);
-        end.addProperty("lon", endLongitude);
-
-        List<String> dateInList = getCurrentDate();
-        JsonObject date = new JsonObject();
-        date.addProperty("year", dateInList.get(1));
-        date.addProperty("month", dateInList.get(2));
-        date.addProperty("day", dateInList.get(3));
-        date.addProperty("hour", dateInList.get(4));
-        date.addProperty("min", dateInList.get(5));
-
-        JsonObject time = new JsonObject();
-        time.addProperty("hours", usedHours);
-        time.addProperty("mins", usedMins);
-
-        finalData.add("start", start);
-        finalData.add("end", end);
-        finalData.add("date", date);
-        finalData.add("time", time);
-        finalData.addProperty("distance", distance);
-
-        return finalData;
-    }
-
-    /* Return today'start_walking_image_icon date string data */
-    private List<String> getCurrentDate()
-    {
-        List<String> dataList = new ArrayList<String>();
-
-        //Calculating the current date
-        Date currentTime = Calendar.getInstance().getTime();
-        SimpleDateFormat weekdayFormat = new SimpleDateFormat("EE", Locale.getDefault());
-        SimpleDateFormat dayFormat = new SimpleDateFormat("dd", Locale.getDefault());
-        SimpleDateFormat monthFormat = new SimpleDateFormat("MM", Locale.getDefault());
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
-        SimpleDateFormat hourFormat = new SimpleDateFormat("HH", Locale.getDefault());
-        SimpleDateFormat minFormat = new SimpleDateFormat("mm", Locale.getDefault());
-
-        String weekDay = weekdayFormat.format(currentTime);
-        String year = yearFormat.format(currentTime);
-        String month = monthFormat.format(currentTime);
-        String day = dayFormat.format(currentTime);
-        String hour = hourFormat.format(currentTime);
-        String min = minFormat.format(currentTime);
-
-        Log.v("CurretDating","Brought weekday = " + weekDay + "\n"
-                + "Brought year = " + year + "\n"
-                + "Brought month = " + month + "\n"
-                + "Brought day = " + day + "\n");
-
-        /* Return results(date intofrmation) by list<String> */
-
-        dataList.add(weekDay);
-        dataList.add(year);
-        dataList.add(month);
-        dataList.add(day);
-        dataList.add(hour);
-        dataList.add(min);
-
-        return dataList;
-    }
-
-    private Date getCurrentDateInDate()
-    {
-        //Calculating the current date
-        Date currentTime = Calendar.getInstance().getTime();
-
-        return currentTime;
-    }
-
-    private List<String> getTotalTime(Date startTime, Date endTime)
-    {
-        Long diffInMilSec = endTime.getTime() - startTime.getTime(); //ms / 1000 -> start_walking_image_icon, /60 -> m
-        Long diffInM = diffInMilSec/(1000*60);
-        Long diffHour = diffInM/60;
-        Long diffMin =  diffInM%60;
-
-        List <String> difference = new ArrayList<String>();
-        difference.add( Long.toString(diffHour) );
-        difference.add( Long.toString(diffMin) );
-
-        return difference;
-    }
-
 
     @Override
     public void onClick(View v) {
@@ -344,6 +211,7 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.current_btn:
                 isClickgetCurrent = !isClickgetCurrent;
                 if (isClickgetCurrent) {
+                    tMapView.removeAllTMapPolyLine();
                     getCurrentBtn.setBackgroundResource(R.drawable.baseline_gps_fixed_black_18);
                     getCurrentPlace();
                 } else {
@@ -399,7 +267,6 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
                         Element root = document.getDocumentElement();
 
                         NodeList nodeListPlacemark = root.getElementsByTagName("Placemark");
-                        NodeList totalDistance = root.getElementsByTagName("tmap:totalDistance");
 
                         for (int i = 0; i < nodeListPlacemark.getLength(); i++) {
                             String point;
@@ -411,12 +278,16 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
                             for (int j = 0; j < nodeListPlacemarkItem.getLength(); j++) {
 
                                 if (nodeListPlacemarkItem.item(j).getNodeName().equals("name")) {
+                                    Log.d("Name2", nodeListPlacemarkItem.item(j).getTextContent().trim() + "----------------");
                                     if (!nodeListPlacemarkItem.item(j).getTextContent().trim().equals("")) {
                                         break;
                                     }
                                 }
 
                                 if (nodeListPlacemarkItem.item(j).getNodeName().equals("description")) {
+                                    if (nodeListPlacemarkItem.item(j).getTextContent().trim().contains(",")) {
+                                        break;
+                                    }
                                     path.add(nodeListPlacemarkItem.item(j).getTextContent().trim());
                                 }
 
@@ -429,21 +300,27 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
                                 }
                             }
                         }
-                        Log.i("debug", "+++++++++++++++++" + totalDistance.item(0).getTextContent());
                         for (int i = 0; i < checkPoints.size(); i++) {
                             TMapPoint checkPointGPS = new TMapPoint(checkPoints.get(i).getLatitude(), checkPoints.get(i).getLongitude());
-                            tMapView.addMarkerItem("CheckPoint" + i, addMarker(checkPointGPS, R.drawable.point, "경유지"));
+                            tMapView.addMarkerItem("CheckPoint" + i, addMarker(checkPointGPS, R.drawable.checkpoint, "경유지"));
                         }
-                        pathAdapter = new PathAdapter(path);
-                        pathRecyclerView.setAdapter(pathAdapter);
+                        pathAdapter.setAdapter(path);
+                        pathAdapter.notifyDataSetChanged();
                     }
                 });
                 break;
-            case R.id.stop:
+            case R.id.home:
                 TMapPoint start = new TMapPoint(currentPosition.getLatitude(), currentPosition.getLongitude());
                 TMapPoint end = new TMapPoint(departurePosition.getLatitude(), departurePosition.getLongitude());
+//                TMapPoint start = new TMapPoint(36.374685254252434, 127.36680233241498);
 
-                endDate = getCurrentDateInDate();
+                if (checkPoints != null) {
+                    for (int i = 0; i < checkPoints.size(); i++) {
+                        tMapView.removeMarkerItem("CheckPoint" + i);
+                    }
+                }
+
+                checkPoints = new ArrayList<>();
 
                 tMapData.convertGpsToAddress(currentPosition.getLatitude(), currentPosition.getLongitude(), new TMapData.ConvertGPSToAddressListenerCallback() {
                     @Override
@@ -476,6 +353,8 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 });
 
+                path = new ArrayList<>();
+
                 tMapData.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH, start, end, new TMapData.FindPathDataAllListenerCallback() {
                     @Override
                     public void onFindPathDataAll(Document document) {
@@ -485,27 +364,54 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
                         NodeList totalDistance = root.getElementsByTagName("tmap:totalDistance");
 
                         for (int i = 0; i < nodeListPlacemark.getLength(); i++) {
+                            String point;
+                            String[] position;
+                            Place checkPoint = new Place();
+
                             NodeList nodeListPlacemarkItem = nodeListPlacemark.item(i).getChildNodes();
+
                             for (int j = 0; j < nodeListPlacemarkItem.getLength(); j++) {
-//                                if (nodeListPlacemarkItem.item(j).getNodeName().equals("description")) {
-//                                    Log.i("debug", "--------" + nodeListPlacemarkItem.item(j).getTextContent().trim());
-//                                }
+
+                                if (nodeListPlacemarkItem.item(j).getNodeName().equals("name")) {
+                                    Log.d("Name2", nodeListPlacemarkItem.item(j).getTextContent().trim() + "----------------");
+                                    if (!nodeListPlacemarkItem.item(j).getTextContent().trim().equals("")) {
+                                        break;
+                                    }
+                                }
+
+                                if (nodeListPlacemarkItem.item(j).getNodeName().equals("description")) {
+                                    if (nodeListPlacemarkItem.item(j).getTextContent().trim().contains(",")) {
+                                        break;
+                                    }
+                                    path.add(nodeListPlacemarkItem.item(j).getTextContent().trim());
+                                }
 
                                 if (nodeListPlacemarkItem.item(j).getNodeName().equals("Point")) {
-                                    Log.i("debug", "~~~~~~~~~~~~~" + nodeListPlacemarkItem.item(j).getTextContent());
-
-                                    String point = nodeListPlacemarkItem.item(j).getTextContent().trim();
-                                    String[] position = point.split(",");
-                                    Double[] dPosition = new Double[] {Double.parseDouble(position[0]), Double.parseDouble(position[1])};
-
-                                    tMapView.addMarkerItem("CheckPoint"+ j, addMarker(new TMapPoint(dPosition[1], dPosition[0]), R.drawable.point, "경유지"));
+                                    point = nodeListPlacemarkItem.item(j).getTextContent().trim();
+                                    position = point.split(",");
+                                    checkPoint.setLongitude(Double.parseDouble(position[0]));
+                                    checkPoint.setLatitude(Double.parseDouble(position[1]));
+                                    checkPoints.add(checkPoint);
                                 }
                             }
                         }
+                        for (int i = 0; i < checkPoints.size(); i++) {
+                            TMapPoint checkPointGPS = new TMapPoint(checkPoints.get(i).getLatitude(), checkPoints.get(i).getLongitude());
+                            tMapView.addMarkerItem("CheckPoint" + i, addMarker(checkPointGPS, R.drawable.checkpoint, "경유지"));
+                        }
+                        pathAdapter.setAdapter(path);
+                        pathAdapter.notifyDataSetChanged();
+                        totalLength = Double.parseDouble(totalDistance.item(0).getTextContent());
+                        totalLength = totalLength / 1000.0;
                         Log.i("debug", "+++++++++++++++++" + totalDistance.item(0).getTextContent());
                     }
                 });
+
+                break;
+            case R.id.stop:
+                endDate = getCurrentDateInDate();
                 sendRecord();
+                Toast.makeText(getApplicationContext(), "저장완료", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -553,14 +459,23 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
 
 
     class GetTmap extends AsyncTask<Double, String, String> {
+        TMapView tMapView;
+
+        public GetTmap(TMapView tMapView) {
+            this.tMapView = tMapView;
+        }
+
         @Override
         protected String doInBackground(Double... location) {
             try {
-                String address = new TMapData().convertGpsToAddress(location[0], location[1]);
-                Log.d("Print", "------------------------------------------------");
-                return address;
+//                Handler mHandler = new Handler(Looper.getMainLooper());
+//                mHandler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        getCurrentPlace();
+//                    }
+//                }, 0);
             } catch (Exception e) {
-                Log.d("Print", "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 e.printStackTrace();
             }
             return null;
@@ -572,5 +487,152 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    public String getDeviceId()
+    {
+        TelephonyManager telephonyManager;
+        telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Permission.getCertainPerm(4)) != PackageManager.PERMISSION_GRANTED) {
+            return null;
+        }
+
+        String deviceId = telephonyManager.getDeviceId();
+        return deviceId;
+    }
+
+    private void setWalkingRetrofitInit() {
+        String baseUrl = "http://192.249.19.252:2580/";
+        mRetrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        mRetrofitAPI = mRetrofit.create(RetrofitAPI.class);
+    }
+
+    public void sendRecord() {
+        setWalkingRetrofitInit();
+        String deviceId = getDeviceId();
+
+        List<String> totalTime = getTotalTime(startDate, endDate);
+
+        Log.d("DEBUG", departurePosition.getLatitude() + ", " + departurePosition.getLongitude());
+        JsonObject walkingRecord = setWalkingRecord(String.valueOf(departurePosition.getLatitude())
+                , String.valueOf(departurePosition.getLongitude()), String.valueOf(arrivalPosition.getLatitude())
+                , String.valueOf(arrivalPosition.getLongitude()),
+                totalTime.get(0), totalTime.get(1), String.valueOf(totalLength));
+        Call<JsonObject> walkingData = mRetrofitAPI.storeWalkingRecord(walkingRecord, deviceId);
+
+        Callback<JsonObject> mRetrofitCallback = new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("Retrofit Success", response.toString());
+                //Log.d(TAG, result);
+                if (response.body() != null) {
+                    Log.i("record sending","Success!!!");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                t.printStackTrace();
+                Log.e("Err", t.getMessage());
+            }
+        };
+
+        walkingData.enqueue(mRetrofitCallback);
+    }
+
+    public JsonObject setWalkingRecord(String startLatitude, String startLongitude, String endLatitude, String endLongitude, String usedHours, String usedMins, String distance)
+    {
+        JsonObject finalData = new JsonObject();
+
+        JsonObject start = new JsonObject();
+        start.addProperty("lat", startLatitude);
+        start.addProperty("lon", startLongitude);
+
+        JsonObject end = new JsonObject();
+        end.addProperty("lat", endLatitude);
+        end.addProperty("lon", endLongitude);
+
+        List<String> dateInList = getCurrentDate();
+        JsonObject date = new JsonObject();
+        date.addProperty("year", dateInList.get(1));
+        date.addProperty("month", dateInList.get(2));
+        date.addProperty("day", dateInList.get(3));
+        date.addProperty("hour", dateInList.get(4));
+        date.addProperty("min", dateInList.get(5));
+
+        JsonObject time = new JsonObject();
+        time.addProperty("hours", usedHours);
+        time.addProperty("mins", usedMins);
+
+        finalData.add("start", start);
+        finalData.add("end", end);
+        finalData.add("date", date);
+        finalData.add("time", time);
+        finalData.addProperty("distance", distance);
+
+        return finalData;
+    }
+
+    /* Return today's date string data */
+    private List<String> getCurrentDate()
+    {
+        List<String> dataList = new ArrayList<String>();
+
+        //Calculating the current date
+        Date currentTime = Calendar.getInstance().getTime();
+        SimpleDateFormat weekdayFormat = new SimpleDateFormat("EE", Locale.getDefault());
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd", Locale.getDefault());
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MM", Locale.getDefault());
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+        SimpleDateFormat hourFormat = new SimpleDateFormat("HH", Locale.getDefault());
+        SimpleDateFormat minFormat = new SimpleDateFormat("mm", Locale.getDefault());
+
+        String weekDay = weekdayFormat.format(currentTime);
+        String year = yearFormat.format(currentTime);
+        String month = monthFormat.format(currentTime);
+        String day = dayFormat.format(currentTime);
+        String hour = hourFormat.format(currentTime);
+        String min = minFormat.format(currentTime);
+
+        Log.v("CurretDating","Brought weekday = " + weekDay + "\n"
+                + "Brought year = " + year + "\n"
+                + "Brought month = " + month + "\n"
+                + "Brought day = " + day + "\n");
+
+        /* Return results(date intofrmation) by list<String> */
+
+        dataList.add(weekDay);
+        dataList.add(year);
+        dataList.add(month);
+        dataList.add(day);
+        dataList.add(hour);
+        dataList.add(min);
+
+        return dataList;
+    }
+
+    private Date getCurrentDateInDate()
+    {
+        //Calculating the current date
+        Date currentTime = Calendar.getInstance().getTime();
+
+        return currentTime;
+    }
+
+    private List<String> getTotalTime(Date startTime, Date endTime)
+    {
+        Long diffInMilSec = endTime.getTime() - startTime.getTime(); //ms / 1000 -> s, /60 -> m
+        Long diffInM = diffInMilSec/(1000*60);
+        Long diffHour = diffInM/60;
+        Long diffMin =  diffInM%60;
+
+        List <String> difference = new ArrayList<String>();
+        difference.add( Long.toString(diffHour) );
+        difference.add( Long.toString(diffMin) );
+
+        return difference;
+    }
 }

@@ -27,9 +27,8 @@
             android:layout_height="wrap_content"
             android:textColor="#000000"
             android:textSize="15dp"
-            android:layout_gravity="center_vertical"
-            android:text="Current Place"/>
-
+            android:layout_gravity="center_vertical
+            android:text=""/>
     </LinearLayout>
 
     <LinearLayout
@@ -51,7 +50,7 @@
             android:id="@+id/arrival"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="arrival"
+            android:text=""
             android:textColor="#000000"
             android:textSize="15dp"
             android:layout_gravity="center_vertical"/>
@@ -66,32 +65,40 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_below="@+id/end_layout">
+        android:layout_marginTop="12dp">
 
         <Button
             android:id="@+id/current_btn"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginRight="15dp"
             android:background="@drawable/baseline_gps_not_fixed_black_18" />
 
         <Button
             android:id="@+id/search_around"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginRight="15dp"
             android:background="@drawable/baseline_local_play_black_18"/>
 
         <Button
             android:id="@+id/path_search"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginRight="15dp"
             android:background="@drawable/baseline_find_in_page_black_18"/>
 
         <Button
+            android:id="@+id/home"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/baseline_home_black_18"/>
+
+        <Button
             android:id="@+id/stop"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/baseline_stop_black_18" />
 
     </LinearLayout>
@@ -99,9 +106,10 @@
     <LinearLayout
         android:id="@+id/TMap_container"
         android:layout_width="match_parent"
-        android:layout_height="314dp"
-        android:orientation="horizontal"
-        android:layout_below="@+id/button_container"/>
+        android:layout_height="325dp"
+        android:layout_below="@+id/button_container"
+        android:orientation="horizontal" />
+       
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/path_container"
