@@ -26,14 +26,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#000000"
-<<<<<<< HEAD
             android:textSize="20dp"
             android:text=""/>
-=======
-            android:textSize="15dp"
-            android:layout_gravity="center_vertical"
-            android:text="Current Place"/>
->>>>>>> temp
+
 
     </LinearLayout>
 
@@ -70,11 +65,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-<<<<<<< HEAD
         android:layout_marginTop="12dp">
-=======
-        android:layout_below="@+id/end_layout">
->>>>>>> temp
+
 
         <Button
             android:id="@+id/current_btn"
@@ -115,23 +107,12 @@
     <LinearLayout
         android:id="@+id/TMap_container"
         android:layout_width="match_parent"
-<<<<<<< HEAD
         android:layout_height="325dp"
         android:orientation="horizontal" />
-=======
-        android:layout_height="314dp"
-        android:orientation="horizontal"
-        android:layout_below="@+id/button_container"/>
->>>>>>> temp
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/path_container"
         android:layout_width="match_parent"
-<<<<<<< HEAD
         android:layout_height="match_parent" />
-=======
-        android:layout_height="match_parent"
-        android:layout_below="@+id/TMap_container"/>
->>>>>>> temp
 
 </RelativeLayout>
