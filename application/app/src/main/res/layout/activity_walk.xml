@@ -65,7 +65,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="12dp">
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/TMap_container">
 
 
         <Button
@@ -113,6 +114,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/path_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>
