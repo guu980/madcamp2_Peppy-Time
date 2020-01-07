@@ -141,7 +141,7 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
         pathRecyclerView = findViewById(R.id.path_container);
         pathLayoutManager = new LinearLayoutManager(this);
         pathRecyclerView.setLayoutManager(pathLayoutManager);
-        pathAdapter = new PathAdapter(path);
+        pathAdapter = new PathAdapter(path, getApplicationContext());
         pathRecyclerView.setAdapter(pathAdapter);
 
         tMapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
@@ -212,10 +212,10 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
                 isClickgetCurrent = !isClickgetCurrent;
                 if (isClickgetCurrent) {
                     tMapView.removeAllTMapPolyLine();
-                    getCurrentBtn.setBackgroundResource(R.drawable.baseline_gps_fixed_black_18);
+                    getCurrentBtn.setBackgroundResource(R.drawable.baseline_gps_fixed_black_48);
                     getCurrentPlace();
                 } else {
-                    getCurrentBtn.setBackgroundResource(R.drawable.baseline_gps_not_fixed_black_18);
+                    getCurrentBtn.setBackgroundResource(R.drawable.baseline_gps_not_fixed_black_48);
                     locationManager.removeUpdates(this);
                     tMapView.setCompassMode(false);
                     tMapView.setTrackingMode(false);
