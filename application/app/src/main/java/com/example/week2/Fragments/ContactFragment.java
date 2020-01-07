@@ -223,7 +223,7 @@ public class ContactFragment extends Fragment {
             super.onPostExecute(s);
 
             //doInBackground()로 부터 리턴된 값이 onPostExecute()의 매개변수로 넘어오므로 s를 출력한다.
-            //tv_outPut.setText(s);
+            //tv_outPut.setText(start_walking_image_icon);
         }
     }
 

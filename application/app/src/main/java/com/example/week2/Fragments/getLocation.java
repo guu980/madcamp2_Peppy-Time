@@ -85,7 +85,7 @@ public class getLocation extends AsyncTask<String, String, String> {
                     continue;
                 }
                 if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                    // Found best last known location: %s", l);
+                    // Found best last known location: %start_walking_image_icon", l);
                     bestLocation = l;
                 }
             }

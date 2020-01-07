@@ -27,6 +27,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.week2.Adapter.PetFragmertAdapter;
 import com.example.week2.Data.Permission;
 import com.example.week2.Data.PetWalkingPoint;
 import com.example.week2.MainActivity;
@@ -37,6 +38,7 @@ import com.example.week2.WalkActivity;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.yarolegovich.discretescrollview.DiscreteScrollView;
 
 import org.w3c.dom.Text;
 
@@ -85,25 +87,28 @@ public class PetFragment extends Fragment {
 
         v = inflater.inflate(R.layout.fragment_pet, container, false);
 
-        Button walkBtn = v.findViewById(R.id.walk_btn);
+        DiscreteScrollView scrollView = v.findViewById(R.id.pet_fragment_widget);
+        scrollView.setAdapter(new PetFragmertAdapter(getActivity()));
 
-        walkBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), WalkActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        Button checkBtn = v.findViewById(R.id.check_btn);
-
-        checkBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), RecordActivity.class);
-                startActivity(intent);
-            }
-        });
+//        Button walkBtn = v.findViewById(R.id.walk_btn);
+//
+//        walkBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getContext(), WalkActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//
+//        Button checkBtn = v.findViewById(R.id.check_btn);
+//
+//        checkBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getContext(), RecordActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
         ProgressBar pointBar = (ProgressBar) v.findViewById(R.id.point_bar);
         TextView pointText = (TextView) v. findViewById(R.id.point_text);
@@ -169,7 +174,7 @@ public class PetFragment extends Fragment {
                     continue;
                 }
                 if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                    // Found best last known location: %s", l);
+                    // Found best last known location: %start_walking_image_icon", l);
                     bestLocation = l;
                 }
             }

@@ -8,6 +8,7 @@ import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -60,6 +61,8 @@ public class RecordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_record);
 
         Button getDataBtn = (Button) findViewById(R.id.input_button);
@@ -233,7 +236,7 @@ public class RecordActivity extends AppCompatActivity {
         return finalData;
     }
 
-    /* Return today's date string data */
+    /* Return today'start_walking_image_icon date string data */
     private List<String> getCurrentDate()
     {
         List<String> dataList = new ArrayList<String>();
@@ -281,7 +284,7 @@ public class RecordActivity extends AppCompatActivity {
 
     private List<String> getTotalTime(Date startTime, Date endTime)
     {
-        Long diffInMilSec = endTime.getTime() - startTime.getTime(); //ms / 1000 -> s, /60 -> m
+        Long diffInMilSec = endTime.getTime() - startTime.getTime(); //ms / 1000 -> start_walking_image_icon, /60 -> m
         Long diffInM = diffInMilSec/(1000*60);
         Long diffHour = diffInM/60;
         Long diffMin =  diffInM%60;

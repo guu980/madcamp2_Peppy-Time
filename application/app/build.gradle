@@ -46,4 +46,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+
+    //for design
+    implementation 'com.yarolegovich:discrete-scrollview:1.4.9'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
 }

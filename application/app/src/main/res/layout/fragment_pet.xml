@@ -1,41 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_theme_color">
 
-    <Button
-        android:id="@+id/walk_btn"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="산책" />
+        android:layout_height="match_parent"
+        android:background="@color/background_theme_color"
+        />
 
-    <Button
-        android:id="@+id/check_btn"
+    <com.yarolegovich.discretescrollview.DiscreteScrollView
+        android:id="@+id/pet_fragment_widget"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="기록확인" />
+        android:layout_height="300dp"
+        android:layout_marginTop="30dp"
+        app:dsv_orientation="horizontal" />
+
+<!--    <Button-->
+<!--        android:id="@+id/walk_btn"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="산책" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/check_btn"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="기록확인" />-->
 
 
     <ImageView
         android:id="@+id/weatherImage"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/pet_fragment_widget"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
         />
 
     <ProgressBar
         android:id="@+id/point_bar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_gravity="center_horizontal"
-        android:max="100"
-        />
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/weatherImage"
+        android:max="100" />
 
     <TextView
         android:id="@+id/point_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="점수"
-        android:layout_gravity="center_horizontal"
+        android:textColor="@color/standard_text_color"
+        android:layout_below="@id/point_bar"
+        android:layout_centerHorizontal="true"
         />
-</LinearLayout>
+
+</RelativeLayout>

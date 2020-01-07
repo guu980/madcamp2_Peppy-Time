@@ -3,4 +3,12 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="recycler_view_bg_color1">#F0F5D0</color>
+    <color name="recycler_view_bg_color2">#E7F5D0</color>
+    <color name="recyclcr_view_location_color">#046F66</color>
+    <color name="recyclcr_view_subtext_color">#86B3AB</color>
+
+    <color name="standard_text_color">#003F0D</color>
+    <color name="background_theme_color">#EDF1ED</color>
 </resources>
