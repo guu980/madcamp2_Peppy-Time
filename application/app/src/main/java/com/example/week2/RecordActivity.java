@@ -79,7 +79,6 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     private void setWalkingRetrofitInit() {
-        //"http://192.249.19.252:2580/"
         String baseUrl = "http://192.249.19.252:2580/";
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
@@ -160,25 +159,14 @@ public class RecordActivity extends AppCompatActivity {
 
     public String getDeviceId()
     {
-//        mainActivity = (MainActivity) RecordActivity.this.mainActivity;
-//        TelephonyManager tm = (TelephonyManager) mainActivity.getSystemService(TELEPHONY_SERVICE);
-
         TelephonyManager telephonyManager;
         telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
         //getApplicationContext 가능한지 체크
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Permission.getCertainPerm(4)) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    Activity#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for Activity#requestPermissions for more details.
             return null;
         }
 
-//        String deviceId = tm.getDeviceId();
         String deviceId = telephonyManager.getDeviceId();
         return deviceId;
     }

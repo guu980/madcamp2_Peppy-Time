@@ -136,30 +136,30 @@ public class WalkingRecordAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         String preStartLat = walkingRecords.get(position).getStartLat();
         String StartLat = preStartLat;
-        if(preStartLat.length() > 5)
+        if(preStartLat.length() > 6)
         {
-            StartLat = StartLat.substring(0,4);
+            StartLat = StartLat.substring(0,5);
         }
 
         String preStartLon = walkingRecords.get(position).getStratLon();
         String StartLon = preStartLon;
-        if(preStartLon.length() > 5)
+        if(preStartLon.length() > 6)
         {
-            StartLon = StartLon.substring(0,4);
+            StartLon = StartLon.substring(0,5);
         }
 
         String preEndLat = walkingRecords.get(position).getEndLat();
         String EndLat = preEndLat;
-        if(preEndLat.length() > 5)
+        if(preEndLat.length() > 6)
         {
-            EndLat = EndLat.substring(0,4);
+            EndLat = EndLat.substring(0,5);
         }
 
         String preEndLon = walkingRecords.get(position).getEndLon();
         String EndLon = preEndLon;
-        if(preEndLon.length() > 5)
+        if(preEndLon.length() > 6)
         {
-            EndLon = EndLon.substring(0,4);
+            EndLon = EndLon.substring(0,5);
         }
 
         String locationInfoString = "(" + StartLat + ", " + StartLon + ")"

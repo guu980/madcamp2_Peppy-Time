@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,7 +27,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.week2.Adapter.PathAdapter;
+import com.example.week2.Data.Permission;
 import com.example.week2.Data.Place;
+import com.example.week2.Retrofit.RetrofitAPI;
+import com.google.gson.JsonObject;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPOIItem;
@@ -38,7 +42,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class WalkActivity extends AppCompatActivity implements View.OnClickListener, LocationListener
@@ -73,6 +88,13 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isClickgetCurrent = false;
 
     private final static String KEY = "l7xx4cc55d11137f41b1b1f13b5e1259e2fc";
+
+/////////////////////////////////////////////////////////////////////////////////
+
+    private Retrofit mRetrofit;
+    private RetrofitAPI mRetrofitAPI;
+    private Date startDate;
+    private Date endDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +185,155 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
         return markerItem;
     }
 
+    public String getDeviceId()
+    {
+        TelephonyManager telephonyManager;
+        telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Permission.getCertainPerm(4)) != PackageManager.PERMISSION_GRANTED) {
+            return null;
+        }
+
+        String deviceId = telephonyManager.getDeviceId();
+        return deviceId;
+    }
+
+    private void setWalkingRetrofitInit() {
+        String baseUrl = "http://192.249.19.252:2580/";
+        mRetrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        mRetrofitAPI = mRetrofit.create(RetrofitAPI.class);
+    }
+
+    public void sendRecord() {
+        setWalkingRetrofitInit();
+        String deviceId = getDeviceId();
+
+        List<String> totalTime = getTotalTime(startDate, endDate);
+
+        Log.d("DEBUG", departurePosition.getLatitude() + ", " + departurePosition.getLongitude());
+        JsonObject walkingRecord = setWalkingRecord(String.valueOf(departurePosition.getLatitude())
+                , String.valueOf(departurePosition.getLongitude()), String.valueOf(arrivalPosition.getLatitude())
+                , String.valueOf(arrivalPosition.getLongitude()),
+                totalTime.get(0), totalTime.get(1), "3.0");
+        Call<JsonObject> walkingData = mRetrofitAPI.storeWalkingRecord(walkingRecord, deviceId);
+
+        Callback<JsonObject> mRetrofitCallback = new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                Log.d("Retrofit Success", response.toString());
+                //Log.d(TAG, result);
+                if (response.body() != null) {
+                    Log.i("record sending","Success!!!");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                t.printStackTrace();
+                Log.e("Err", t.getMessage());
+            }
+        };
+
+        walkingData.enqueue(mRetrofitCallback);
+    }
+
+    public JsonObject setWalkingRecord(String startLatitude, String startLongitude, String endLatitude, String endLongitude, String usedHours, String usedMins, String distance)
+    {
+        JsonObject finalData = new JsonObject();
+
+        JsonObject start = new JsonObject();
+        start.addProperty("lat", startLatitude);
+        start.addProperty("lon", startLongitude);
+
+        JsonObject end = new JsonObject();
+        end.addProperty("lat", endLatitude);
+        end.addProperty("lon", endLongitude);
+
+        List<String> dateInList = getCurrentDate();
+        JsonObject date = new JsonObject();
+        date.addProperty("year", dateInList.get(1));
+        date.addProperty("month", dateInList.get(2));
+        date.addProperty("day", dateInList.get(3));
+        date.addProperty("hour", dateInList.get(4));
+        date.addProperty("min", dateInList.get(5));
+
+        JsonObject time = new JsonObject();
+        time.addProperty("hours", usedHours);
+        time.addProperty("mins", usedMins);
+
+        finalData.add("start", start);
+        finalData.add("end", end);
+        finalData.add("date", date);
+        finalData.add("time", time);
+        finalData.addProperty("distance", distance);
+
+        return finalData;
+    }
+
+    /* Return today's date string data */
+    private List<String> getCurrentDate()
+    {
+        List<String> dataList = new ArrayList<String>();
+
+        //Calculating the current date
+        Date currentTime = Calendar.getInstance().getTime();
+        SimpleDateFormat weekdayFormat = new SimpleDateFormat("EE", Locale.getDefault());
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd", Locale.getDefault());
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MM", Locale.getDefault());
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+        SimpleDateFormat hourFormat = new SimpleDateFormat("HH", Locale.getDefault());
+        SimpleDateFormat minFormat = new SimpleDateFormat("mm", Locale.getDefault());
+
+        String weekDay = weekdayFormat.format(currentTime);
+        String year = yearFormat.format(currentTime);
+        String month = monthFormat.format(currentTime);
+        String day = dayFormat.format(currentTime);
+        String hour = hourFormat.format(currentTime);
+        String min = minFormat.format(currentTime);
+
+        Log.v("CurretDating","Brought weekday = " + weekDay + "\n"
+                + "Brought year = " + year + "\n"
+                + "Brought month = " + month + "\n"
+                + "Brought day = " + day + "\n");
+
+        /* Return results(date intofrmation) by list<String> */
+
+        dataList.add(weekDay);
+        dataList.add(year);
+        dataList.add(month);
+        dataList.add(day);
+        dataList.add(hour);
+        dataList.add(min);
+
+        return dataList;
+    }
+
+    private Date getCurrentDateInDate()
+    {
+        //Calculating the current date
+        Date currentTime = Calendar.getInstance().getTime();
+
+        return currentTime;
+    }
+
+    private List<String> getTotalTime(Date startTime, Date endTime)
+    {
+        Long diffInMilSec = endTime.getTime() - startTime.getTime(); //ms / 1000 -> s, /60 -> m
+        Long diffInM = diffInMilSec/(1000*60);
+        Long diffHour = diffInM/60;
+        Long diffMin =  diffInM%60;
+
+        List <String> difference = new ArrayList<String>();
+        difference.add( Long.toString(diffHour) );
+        difference.add( Long.toString(diffMin) );
+
+        return difference;
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -197,6 +368,8 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.path_search:
                 TMapPoint startPoint = new TMapPoint(departurePosition.getLatitude(), departurePosition.getLongitude());
                 TMapPoint endPoint = new TMapPoint(arrivalPosition.getLatitude(), arrivalPosition.getLongitude());
+
+                startDate = getCurrentDateInDate();
 
                 if (checkPoints != null) {
                     for (int i = 0; i < checkPoints.size(); i++) {
@@ -267,6 +440,8 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
                 TMapPoint start = new TMapPoint(currentPosition.getLatitude(), currentPosition.getLongitude());
                 TMapPoint end = new TMapPoint(departurePosition.getLatitude(), departurePosition.getLongitude());
 
+                endDate = getCurrentDateInDate();
+
                 tMapData.convertGpsToAddress(currentPosition.getLatitude(), currentPosition.getLongitude(), new TMapData.ConvertGPSToAddressListenerCallback() {
                     @Override
                     public void onConvertToGPSToAddress(String s) {
@@ -327,6 +502,7 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
                         Log.i("debug", "+++++++++++++++++" + totalDistance.item(0).getTextContent());
                     }
                 });
+                sendRecord();
                 break;
         }
     }
