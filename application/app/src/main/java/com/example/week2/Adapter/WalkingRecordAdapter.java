@@ -10,11 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.week2.Data.Permission;
@@ -48,6 +50,7 @@ public class WalkingRecordAdapter extends RecyclerView.Adapter<RecyclerView.View
         private TextView totalTimeInfo;
         private TextView distanceInfo;
         private Button deleteButton;
+        private RelativeLayout itemBg;
 
         public WalkingRecordViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -58,6 +61,7 @@ public class WalkingRecordAdapter extends RecyclerView.Adapter<RecyclerView.View
             totalTimeInfo = itemView.findViewById(R.id.totalTime);
             distanceInfo = itemView.findViewById(R.id.totalDistance);
             deleteButton = itemView.findViewById(R.id.records_del_button);
+            itemBg = itemView.findViewById(R.id.recycler_view_bg);
 
 //            mainActivity = (MainActivity) context;
 
@@ -133,6 +137,11 @@ public class WalkingRecordAdapter extends RecyclerView.Adapter<RecyclerView.View
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         WalkingRecordAdapter.WalkingRecordViewHolder viewHolder = (WalkingRecordAdapter.WalkingRecordViewHolder) holder;
+
+        if(position%2 == 1)
+        {
+            ((WalkingRecordViewHolder) holder).itemBg.setBackgroundColor(ContextCompat.getColor(context, R.color.recycler_view_bg_color2));
+        }
 
         String preStartLat = walkingRecords.get(position).getStartLat();
         String StartLat = preStartLat;
