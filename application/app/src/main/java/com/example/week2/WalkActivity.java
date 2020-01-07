@@ -310,9 +310,9 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
                 });
                 break;
             case R.id.home:
-//                TMapPoint start = new TMapPoint(currentPosition.getLatitude(), currentPosition.getLongitude());
+                TMapPoint start = new TMapPoint(currentPosition.getLatitude(), currentPosition.getLongitude());
                 TMapPoint end = new TMapPoint(departurePosition.getLatitude(), departurePosition.getLongitude());
-                TMapPoint start = new TMapPoint(36.374685254252434, 127.36680233241498);
+//                TMapPoint start = new TMapPoint(36.374685254252434, 127.36680233241498);
 
                 if (checkPoints != null) {
                     for (int i = 0; i < checkPoints.size(); i++) {
