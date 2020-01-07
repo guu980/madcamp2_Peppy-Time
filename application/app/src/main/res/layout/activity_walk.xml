@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container"
     android:orientation="vertical"
@@ -10,36 +10,47 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="20dp"
+        android:id="@+id/start_layout">
 
         <TextView
             android:text="출발지 : "
             android:textColor="#000000"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"/>
 
         <TextView
             android:id="@+id/departure"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#000000"
+<<<<<<< HEAD
             android:textSize="20dp"
             android:text=""/>
+=======
+            android:textSize="15dp"
+            android:layout_gravity="center_vertical"
+            android:text="Current Place"/>
+>>>>>>> temp
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="20dp"
+        android:orientation="horizontal"
+        android:id="@+id/end_layout"
+        android:layout_below="@id/start_layout">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:textColor="#000000"
-            android:text="도착지 : " />
+            android:text="도착지 : "
+            android:layout_gravity="center_vertical"/>
 
         <TextView
             android:id="@+id/arrival"
@@ -47,7 +58,8 @@
             android:layout_height="wrap_content"
             android:text=""
             android:textColor="#000000"
-            android:textSize="20dp" />
+            android:textSize="15dp"
+            android:layout_gravity="center_vertical"/>
 
     </LinearLayout>
 
@@ -58,7 +70,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+<<<<<<< HEAD
         android:layout_marginTop="12dp">
+=======
+        android:layout_below="@+id/end_layout">
+>>>>>>> temp
 
         <Button
             android:id="@+id/current_btn"
@@ -99,12 +115,23 @@
     <LinearLayout
         android:id="@+id/TMap_container"
         android:layout_width="match_parent"
+<<<<<<< HEAD
         android:layout_height="325dp"
         android:orientation="horizontal" />
+=======
+        android:layout_height="314dp"
+        android:orientation="horizontal"
+        android:layout_below="@+id/button_container"/>
+>>>>>>> temp
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/path_container"
         android:layout_width="match_parent"
+<<<<<<< HEAD
         android:layout_height="match_parent" />
+=======
+        android:layout_height="match_parent"
+        android:layout_below="@+id/TMap_container"/>
+>>>>>>> temp
 
-</LinearLayout>
+</RelativeLayout>

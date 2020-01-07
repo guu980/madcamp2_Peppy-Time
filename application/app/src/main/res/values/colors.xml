@@ -11,4 +11,6 @@
 
     <color name="standard_text_color">#003F0D</color>
     <color name="background_theme_color">#EDF1ED</color>
+    <color name="standard_accent_color">#6A9786</color>
+    <color name="sampe">#000000</color>
 </resources>
