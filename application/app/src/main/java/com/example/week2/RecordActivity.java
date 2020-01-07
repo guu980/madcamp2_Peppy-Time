@@ -207,10 +207,10 @@ public class RecordActivity extends AppCompatActivity {
         time.addProperty("hours", usedHours);
         time.addProperty("mins", usedMins);
 
-        finalData.addProperty("start", start.toString());
-        finalData.addProperty("end", end.toString());
-        finalData.addProperty("date", date.toString());
-        finalData.addProperty("time", time.toString());
+        finalData.add("start", start);
+        finalData.add("end", end);
+        finalData.add("date", date);
+        finalData.add("time", time);
         finalData.addProperty("distance", distance);
 
         return finalData;
