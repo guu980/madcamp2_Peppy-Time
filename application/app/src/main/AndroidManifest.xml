@@ -45,6 +45,7 @@
         <activity android:name="com.example.week2.DetailActivity"/>
         <activity android:name=".WalkActivity"/>
         <activity android:name=".RecordActivity"/>
+        <activity android:name=".ShowPastPath"/>
 
     </application>
 

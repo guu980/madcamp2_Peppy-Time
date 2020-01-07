@@ -240,7 +240,6 @@ public class PetFragment extends Fragment {
                     String weatherImgItemUrl = weatherImgData.substring(1, weatherImgData.length() - 1);
                     String weatherImgUrl = "http://openweathermap.org/img/w/" + weatherImgItemUrl + ".png";
                     ImageView weatherImgView = v.findViewById(R.id.weatherImage);
-                    //Glide.with(getContext()).load(weatherImgUrl).into(weatherImgView);
                     Glide.with(getContext()).load(weatherImgUrl)
                             .placeholder(R.drawable.loading)
                             .error(R.drawable.image_error)
