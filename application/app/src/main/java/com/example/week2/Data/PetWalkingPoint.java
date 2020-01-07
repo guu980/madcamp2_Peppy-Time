@@ -112,7 +112,7 @@ public class PetWalkingPoint {
                 }
 
                 pointBar.setProgress(intPoint);
-                pointText.setText(realPoint.toString());
+                pointText.setText(intPoint.toString() + " 점!!!");
             }
 
             @Override

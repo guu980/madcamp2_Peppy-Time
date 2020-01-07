@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -126,20 +127,27 @@ public class RecordActivity extends AppCompatActivity {
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 Log.d("Retrofit Success", response.toString());
                 //Log.d(TAG, result);
-                if (response.body() != null) {
-                    JsonArray walkingRecordsJA = response.body();
+                JsonArray walkingRecordsJA = response.body();
 
-                    //recycler view 로 표시
-                    walkingRecordRecyclerView = (RecyclerView) findViewById(R.id.walking_record_recycler_view);
-                    walkingRecordLayoutManager = new LinearLayoutManager(getApplicationContext());
-                    walkingRecordRecyclerView.setLayoutManager(walkingRecordLayoutManager);
-
-                    ArrayList<WalkingRecordInfo> walkingRecords = parseWalkingRecords(walkingRecordsJA);
-
-                    walkingRecordAdapter = new WalkingRecordAdapter(getApplicationContext(), walkingRecords);
-
-                    walkingRecordRecyclerView.setAdapter(walkingRecordAdapter);
+                if(response.body().size() == 0)
+                {
+                    //taost message
+                    Toast.makeText(getApplicationContext(),
+                            "해당하는 산책기록이 없습니다",
+                            Toast.LENGTH_SHORT).show();
                 }
+
+                //recycler view 로 표시
+                walkingRecordRecyclerView = (RecyclerView) findViewById(R.id.walking_record_recycler_view);
+                walkingRecordLayoutManager = new LinearLayoutManager(getApplicationContext());
+                walkingRecordRecyclerView.setLayoutManager(walkingRecordLayoutManager);
+
+                ArrayList<WalkingRecordInfo> walkingRecords = parseWalkingRecords(walkingRecordsJA);
+
+                walkingRecordAdapter = new WalkingRecordAdapter(getApplicationContext(), walkingRecords);
+
+                walkingRecordRecyclerView.setAdapter(walkingRecordAdapter);
+
             }
 
             @Override
