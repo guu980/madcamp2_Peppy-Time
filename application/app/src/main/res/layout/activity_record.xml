@@ -40,10 +40,11 @@
                 android:hint="Day"
                 />
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/search_item"
                 android:id="@+id/input_button"
-                android:text="산책 기록 불러오기"
                 android:layout_alignParentRight="true"
                 />
         </RelativeLayout>
