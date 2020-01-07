@@ -11,22 +11,24 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="20dp"
-        android:id="@+id/start_layout">
+        android:id="@+id/start_layout"
+        android:layout_below="@+id/button_container"
+        android:layout_marginTop="20dp">
 
         <TextView
             android:text="출발지 : "
-            android:textColor="#000000"
+            android:textColor="@color/standard_text_color"
             android:textSize="15dp"
             android:layout_width="wrap_content"
-            android:layout_height="20dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center_vertical"/>
 
         <TextView
             android:id="@+id/departure"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#000000"
-            android:textSize="20dp"
+            android:layout_height="match_parent"
+            android:textColor="@color/standard_text_color"
+            android:textSize="15dp"
             android:text=""/>
 
 
@@ -41,24 +43,22 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:textSize="15dp"
-            android:textColor="#000000"
+            android:textColor="@color/standard_text_color"
             android:text="도착지 : "
             android:layout_gravity="center_vertical"/>
 
         <TextView
             android:id="@+id/arrival"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text=""
-            android:textColor="#000000"
+            android:textColor="@color/standard_text_color"
             android:textSize="15dp"
             android:layout_gravity="center_vertical"/>
 
     </LinearLayout>
-
-
 
     <LinearLayout
         android:id="@+id/button_container"
@@ -66,6 +66,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="12dp"
+        android:gravity="center"
         android:layout_below="@+id/TMap_container">
 
 
@@ -74,47 +75,50 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginRight="15dp"
-            android:background="@drawable/baseline_gps_not_fixed_black_18" />
+            android:background="@drawable/baseline_gps_not_fixed_black_48" />
 
         <Button
             android:id="@+id/search_around"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginRight="15dp"
-            android:background="@drawable/baseline_local_play_black_18"/>
+            android:background="@drawable/baseline_local_play_black_48"/>
 
         <Button
             android:id="@+id/path_search"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginRight="15dp"
-            android:background="@drawable/baseline_find_in_page_black_18"/>
+            android:background="@drawable/baseline_find_in_page_black_48"/>
 
         <Button
             android:id="@+id/home"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginRight="15dp"
-            android:background="@drawable/baseline_home_black_18"/>
+            android:background="@drawable/baseline_home_black_48"/>
 
         <Button
             android:id="@+id/stop"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/baseline_stop_black_18" />
+            android:background="@drawable/baseline_stop_black_48" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/TMap_container"
         android:layout_width="match_parent"
-        android:layout_height="325dp"
+        android:layout_height="450dp"
         android:orientation="horizontal" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/path_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/end_layout"
+        android:layout_marginTop="10dp"/>
 
 </RelativeLayout>
