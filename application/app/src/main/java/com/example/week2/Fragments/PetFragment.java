@@ -90,25 +90,25 @@ public class PetFragment extends Fragment {
         DiscreteScrollView scrollView = v.findViewById(R.id.pet_fragment_widget);
         scrollView.setAdapter(new PetFragmertAdapter(getActivity()));
 
-        Button walkBtn = v.findViewById(R.id.walk_btn);
-
-        walkBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), WalkActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        Button checkBtn = v.findViewById(R.id.check_btn);
-
-        checkBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), RecordActivity.class);
-                startActivity(intent);
-            }
-        });
+//        Button walkBtn = v.findViewById(R.id.walk_btn);
+//
+//        walkBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getContext(), WalkActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//
+//        Button checkBtn = v.findViewById(R.id.check_btn);
+//
+//        checkBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getContext(), RecordActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
         ProgressBar pointBar = (ProgressBar) v.findViewById(R.id.point_bar);
         TextView pointText = (TextView) v. findViewById(R.id.point_text);
