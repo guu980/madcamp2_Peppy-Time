@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.example.week2.Adapter.WalkingRecordAdapter;
 import com.example.week2.R;
 import com.example.week2.Retrofit.RetrofitAPI;
@@ -37,7 +38,7 @@ public class PetWalkingPoint {
     private Retrofit mRetrofit;
     private RetrofitAPI mRetrofitAPI;
 
-    private ProgressBar pointBar;
+    private NumberProgressBar pointBar;
     private TextView pointText;
 
     private Double realPoint;
@@ -45,7 +46,7 @@ public class PetWalkingPoint {
     private String deviceId;
     private JsonArray records;
 
-    public PetWalkingPoint(String deviceId, ProgressBar pointBar, TextView pointText)
+    public PetWalkingPoint(String deviceId, NumberProgressBar pointBar, TextView pointText)
     {
         this.deviceId = deviceId;
         this.pointBar = pointBar;

@@ -27,6 +27,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.example.week2.Adapter.PetFragmertAdapter;
 import com.example.week2.Data.Permission;
 import com.example.week2.Data.PetWalkingPoint;
@@ -110,7 +111,8 @@ public class PetFragment extends Fragment {
 //            }
 //        });
 
-        ProgressBar pointBar = (ProgressBar) v.findViewById(R.id.point_bar);
+//        ProgressBar pointBar = (ProgressBar) v.findViewById(R.id.point_bar);
+        NumberProgressBar pointBar = (NumberProgressBar) v.findViewById(R.id.point_bar);
         TextView pointText = (TextView) v. findViewById(R.id.point_text);
         PetWalkingPoint petWalkingPoint = new PetWalkingPoint(getDeviceId(), pointBar, pointText);
         List<String> currentDate = getCurrentDate();
@@ -236,9 +238,20 @@ public class PetFragment extends Fragment {
                     JsonObject totalData = response.body();
                     JsonArray weatherData = totalData.getAsJsonArray("weather");
                     JsonObject weatherDataJsonObject = (JsonObject) weatherData.get(0);
-                    String weatherImgData = weatherDataJsonObject.get("icon").toString();
-                    String weatherImgItemUrl = weatherImgData.substring(1, weatherImgData.length() - 1);
-                    String weatherImgUrl = "http://openweathermap.org/img/w/" + weatherImgItemUrl + ".png";
+                    String preMain = weatherDataJsonObject.get("main").toString();
+                    String main = preMain.substring(1, preMain.length()-1);
+                    String id = weatherDataJsonObject.get("id").toString();
+                    String preDescription = weatherDataJsonObject.get("description").toString();
+                    String description = preDescription.substring(1, preDescription.length()-1);
+//                    String weatherImgData = weatherDataJsonObject.get("icon").toString();
+                    String weatherImgUrl = getWeatherImgUrl(id);
+
+                    TextView mainText = v.findViewById(R.id.main_text);
+                    mainText.setText(main);
+                    TextView descText = v.findViewById(R.id.description_text);
+                    descText.setText(description);
+
+//                    String weatherImgUrl = "http://openweathermap.org/img/wn/" + weatherImgItemUrl + "@2x.png";
                     ImageView weatherImgView = v.findViewById(R.id.weatherImage);
                     Glide.with(getContext()).load(weatherImgUrl)
                             .placeholder(R.drawable.loading)
@@ -311,6 +324,35 @@ public class PetFragment extends Fragment {
         dataList.add(min);
 
         return dataList;
+    }
+
+    private String getWeatherImgUrl(String id){
+        String firstChar = id.substring(0,1);
+        String lastChar = id.substring(2,3);
+        String imgUrl = null;
+
+        if(firstChar.equals("3")){ //drizzle
+            imgUrl = "https://clipart4biz.com/images600_/drizzled-clipart-rian-1.png";
+        }
+        else if(firstChar.equals("5")){ //rain
+            imgUrl = "https://cdn.icon-icons.com/icons2/1513/PNG/512/cloud_104894.png";
+        }
+        else if(firstChar.equals("6")){ //snow
+            imgUrl = "https://cdn.pixabay.com/photo/2016/06/15/17/46/snow-1459483_960_720.png";
+        }
+        else if(firstChar.equals("7")){ //mist
+            imgUrl =  "https://cdn.onlinewebfonts.com/svg/img_540402.png";
+        }
+        else if(firstChar.equals("8")){ //clear or cloud
+            if(lastChar.equals("0")){ //ckear
+                imgUrl = "https://cdn.icon-icons.com/icons2/1493/PNG/512/sun_102839.png";
+            }
+            else{
+                imgUrl = "https://simpleicon.com/wp-content/uploads/cloud-2.png";
+            }
+        }
+
+        return imgUrl;
     }
 }
 

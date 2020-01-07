@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -31,24 +32,80 @@
 <!--        android:layout_height="wrap_content"-->
 <!--        android:text="기록확인" />-->
 
-
-    <ImageView
-        android:id="@+id/weatherImage"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_below="@+id/pet_fragment_widget"
+    <RelativeLayout
         android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"
+        android:id="@+id/weather_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pet_fragment_widget"
+        >
+
+        <ImageView
+            android:id="@+id/weatherImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="100dp"
+            />
+
+        <TextView
+            android:id="@+id/main_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/weatherImage"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="10dp"
+            android:text="main"
+            android:textSize="20dp"
+            android:textColor="@color/standard_text_color"
         />
 
-    <ProgressBar
+        <TextView
+            android:id="@+id/description_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/weatherImage"
+            android:layout_marginTop="70dp"
+            android:layout_marginLeft="10dp"
+            android:text="description"
+            android:textSize="15dp"
+            android:textColor="@color/standard_text_color"
+            />
+
+    </RelativeLayout>
+
+
+<!--    <ProgressBar-->
+<!--        android:id="@+id/point_bar"-->
+<!--        style="@android:style/Widget.ProgressBar.Horizontal"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:layout_below="@+id/weather_layout"-->
+<!--        android:max="100" />-->
+
+    <com.daimajia.numberprogressbar.NumberProgressBar
         android:id="@+id/point_bar"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/weatherImage"
-        android:max="100" />
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/weather_layout"
+
+        custom:progress_unreached_color="#CCCCCC"
+        custom:progress_reached_color="#6A9786"
+
+        custom:progress_unreached_bar_height="0.75dp"
+        custom:progress_reached_bar_height="1.5dp"
+
+        custom:progress_text_size="10sp"
+        custom:progress_text_color="#6A9786"
+        custom:progress_text_offset="1dp"
+        custom:progress_text_visibility="visible"
+
+        custom:progress_max="100"
+        custom:progress_current="80"
+        />
 
     <TextView
         android:id="@+id/point_text"
@@ -57,6 +114,7 @@
         android:text="점수"
         android:textColor="@color/standard_text_color"
         android:layout_below="@id/point_bar"
+        android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         />
 
