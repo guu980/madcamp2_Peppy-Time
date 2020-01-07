@@ -40,13 +40,13 @@ public class ShowPastPath extends AppCompatActivity {
 
         tMapView.setCenterPoint(Double.parseDouble(position[1]), Double.parseDouble(position[0]));
 
-//        tMapData.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, startPoint, endPoint, new TMapData.FindPathDataListenerCallback() {
-//            @Override
-//            public void onFindPathData(TMapPolyLine tMapPolyLine) {
-//                tMapPolyLine.setLineColor(Color.BLUE);
-//                tMapView.addTMapPolyLine("Line3", tMapPolyLine);
+        tMapData.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, startPoint, endPoint, new TMapData.FindPathDataListenerCallback() {
+            @Override
+            public void onFindPathData(TMapPolyLine tMapPolyLine) {
+                tMapPolyLine.setLineColor(Color.BLUE);
+                tMapView.addTMapPolyLine("Line3", tMapPolyLine);
 //                tMapView.setCenterPoint(Double.parseDouble(position[2]), Double.parseDouble(position[3]));
-//            }
-//        });
+            }
+        });
     }
 }
