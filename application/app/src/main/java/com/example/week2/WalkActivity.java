@@ -86,7 +86,7 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
 
     private ArrayList<Place> checkPoints;
 
-    private String address;
+    private Double totalLength;
 
     private LocationManager locationManager;
 
@@ -144,27 +144,9 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
         tMapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
             @Override
             public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
-                Toast.makeText(getApplicationContext(), tMapMarkerItem.getID(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), tMapMarkerItem.getTMapPoint().getLatitude() + ", " + tMapMarkerItem.getTMapPoint().getLongitude(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.i("ACTIVITY", "Activity OnStart");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.i("ACTIVITY", "Activity OnPause");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.i("ACTIVITY", "Activity OnResume");
     }
 
     private void getCurrentPlace() {
@@ -227,10 +209,9 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.current_btn:
                 isClickgetCurrent = !isClickgetCurrent;
                 if (isClickgetCurrent) {
+                    tMapView.removeAllTMapPolyLine();
                     getCurrentBtn.setBackgroundResource(R.drawable.baseline_gps_fixed_black_18);
                     getCurrentPlace();
-//                    GetTmap getTmap = new GetTmap();
-//                    getTmap.execute();
                 } else {
                     getCurrentBtn.setBackgroundResource(R.drawable.baseline_gps_not_fixed_black_18);
                     locationManager.removeUpdates(this);
@@ -284,6 +265,100 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
                         Element root = document.getDocumentElement();
 
                         NodeList nodeListPlacemark = root.getElementsByTagName("Placemark");
+
+                        for (int i = 0; i < nodeListPlacemark.getLength(); i++) {
+                            String point;
+                            String[] position;
+                            Place checkPoint = new Place();
+
+                            NodeList nodeListPlacemarkItem = nodeListPlacemark.item(i).getChildNodes();
+
+                            for (int j = 0; j < nodeListPlacemarkItem.getLength(); j++) {
+
+                                if (nodeListPlacemarkItem.item(j).getNodeName().equals("name")) {
+                                    Log.d("Name2", nodeListPlacemarkItem.item(j).getTextContent().trim() + "----------------");
+                                    if (!nodeListPlacemarkItem.item(j).getTextContent().trim().equals("")) {
+                                        break;
+                                    }
+                                }
+
+                                if (nodeListPlacemarkItem.item(j).getNodeName().equals("description")) {
+                                    if (nodeListPlacemarkItem.item(j).getTextContent().trim().contains(",")) {
+                                        break;
+                                    }
+                                    path.add(nodeListPlacemarkItem.item(j).getTextContent().trim());
+                                }
+
+                                if (nodeListPlacemarkItem.item(j).getNodeName().equals("Point")) {
+                                    point = nodeListPlacemarkItem.item(j).getTextContent().trim();
+                                    position = point.split(",");
+                                    checkPoint.setLongitude(Double.parseDouble(position[0]));
+                                    checkPoint.setLatitude(Double.parseDouble(position[1]));
+                                    checkPoints.add(checkPoint);
+                                }
+                            }
+                        }
+                        for (int i = 0; i < checkPoints.size(); i++) {
+                            TMapPoint checkPointGPS = new TMapPoint(checkPoints.get(i).getLatitude(), checkPoints.get(i).getLongitude());
+                            tMapView.addMarkerItem("CheckPoint" + i, addMarker(checkPointGPS, R.drawable.checkpoint, "경유지"));
+                        }
+                        pathAdapter.setAdapter(path);
+                        pathAdapter.notifyDataSetChanged();
+                    }
+                });
+                break;
+            case R.id.home:
+//                TMapPoint start = new TMapPoint(currentPosition.getLatitude(), currentPosition.getLongitude());
+                TMapPoint end = new TMapPoint(departurePosition.getLatitude(), departurePosition.getLongitude());
+                TMapPoint start = new TMapPoint(36.374685254252434, 127.36680233241498);
+
+                if (checkPoints != null) {
+                    for (int i = 0; i < checkPoints.size(); i++) {
+                        tMapView.removeMarkerItem("CheckPoint" + i);
+                    }
+                }
+
+                checkPoints = new ArrayList<>();
+
+                tMapData.convertGpsToAddress(currentPosition.getLatitude(), currentPosition.getLongitude(), new TMapData.ConvertGPSToAddressListenerCallback() {
+                    @Override
+                    public void onConvertToGPSToAddress(String s) {
+                        departure.setText(s);
+                    }
+                });
+
+                tMapData.convertGpsToAddress(departurePosition.getLatitude(), departurePosition.getLongitude(), new TMapData.ConvertGPSToAddressListenerCallback() {
+                    @Override
+                    public void onConvertToGPSToAddress(String s) {
+                        arrival.setText(s);
+                    }
+                });
+
+                tMapView.removeMarkerItem("Arrival");
+                tMapView.removeMarkerItem("Departure");
+                tMapView.removeAllMarkerItem();
+
+                tMapView.addMarkerItem("Departure", addMarker(start, R.drawable.start, "출발"));
+                tMapView.addMarkerItem("Arrival", addMarker(end, R.drawable.arrival, "도착"));
+
+                tMapData.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, start, end, new TMapData.FindPathDataListenerCallback() {
+                    @Override
+                    public void onFindPathData(TMapPolyLine tMapPolyLine) {
+                        tMapPolyLine.setLineColor(Color.MAGENTA);
+                        tMapView.removeTMapPolyLine("Line1");
+                        tMapView.addTMapPolyLine("Line2", tMapPolyLine);
+                        tMapView.setCenterPoint(currentPosition.getLongitude(), currentPosition.getLatitude());
+                    }
+                });
+
+                path = new ArrayList<>();
+
+                tMapData.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH, start, end, new TMapData.FindPathDataAllListenerCallback() {
+                    @Override
+                    public void onFindPathDataAll(Document document) {
+                        Element root = document.getDocumentElement();
+
+                        NodeList nodeListPlacemark = root.getElementsByTagName("Placemark");
                         NodeList totalDistance = root.getElementsByTagName("tmap:totalDistance");
 
                         for (int i = 0; i < nodeListPlacemark.getLength(); i++) {
@@ -322,80 +397,10 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
                             TMapPoint checkPointGPS = new TMapPoint(checkPoints.get(i).getLatitude(), checkPoints.get(i).getLongitude());
                             tMapView.addMarkerItem("CheckPoint" + i, addMarker(checkPointGPS, R.drawable.checkpoint, "경유지"));
                         }
-//                        pathAdapter = new PathAdapter(path);
-//                        pathRecyclerView.setAdapter(pathAdapter);
                         pathAdapter.setAdapter(path);
                         pathAdapter.notifyDataSetChanged();
-                    }
-                });
-                break;
-            case R.id.home:
-                TMapPoint start = new TMapPoint(currentPosition.getLatitude(), currentPosition.getLongitude());
-                TMapPoint end = new TMapPoint(departurePosition.getLatitude(), departurePosition.getLongitude());
-
-                if (checkPoints != null) {
-                    for (int i = 0; i < checkPoints.size(); i++) {
-                        tMapView.removeMarkerItem("CheckPoint" + i);
-                    }
-                }
-
-                tMapData.convertGpsToAddress(currentPosition.getLatitude(), currentPosition.getLongitude(), new TMapData.ConvertGPSToAddressListenerCallback() {
-                    @Override
-                    public void onConvertToGPSToAddress(String s) {
-                        departure.setText(s);
-                    }
-                });
-
-                tMapData.convertGpsToAddress(departurePosition.getLatitude(), departurePosition.getLongitude(), new TMapData.ConvertGPSToAddressListenerCallback() {
-                    @Override
-                    public void onConvertToGPSToAddress(String s) {
-                        arrival.setText(s);
-                    }
-                });
-
-                tMapView.removeMarkerItem("Arrival");
-                tMapView.removeMarkerItem("Departure");
-                tMapView.removeAllMarkerItem();
-
-                tMapView.addMarkerItem("Departure", addMarker(start, R.drawable.start, "출발"));
-                tMapView.addMarkerItem("Arrival", addMarker(end, R.drawable.arrival, "도착"));
-
-                tMapData.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, start, end, new TMapData.FindPathDataListenerCallback() {
-                    @Override
-                    public void onFindPathData(TMapPolyLine tMapPolyLine) {
-                        tMapPolyLine.setLineColor(Color.MAGENTA);
-                        tMapView.removeTMapPolyLine("Line1");
-                        tMapView.addTMapPolyLine("Line2", tMapPolyLine);
-                        tMapView.setCenterPoint(currentPosition.getLongitude(), currentPosition.getLatitude());
-                    }
-                });
-
-                tMapData.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH, start, end, new TMapData.FindPathDataAllListenerCallback() {
-                    @Override
-                    public void onFindPathDataAll(Document document) {
-                        Element root = document.getDocumentElement();
-
-                        NodeList nodeListPlacemark = root.getElementsByTagName("Placemark");
-                        NodeList totalDistance = root.getElementsByTagName("tmap:totalDistance");
-
-                        for (int i = 0; i < nodeListPlacemark.getLength(); i++) {
-                            NodeList nodeListPlacemarkItem = nodeListPlacemark.item(i).getChildNodes();
-                            for (int j = 0; j < nodeListPlacemarkItem.getLength(); j++) {
-//                                if (nodeListPlacemarkItem.item(j).getNodeName().equals("description")) {
-//                                    Log.i("debug", "--------" + nodeListPlacemarkItem.item(j).getTextContent().trim());
-//                                }
-
-                                if (nodeListPlacemarkItem.item(j).getNodeName().equals("Point")) {
-                                    Log.i("debug", "~~~~~~~~~~~~~" + nodeListPlacemarkItem.item(j).getTextContent());
-
-                                    String point = nodeListPlacemarkItem.item(j).getTextContent().trim();
-                                    String[] position = point.split(",");
-                                    Double[] dPosition = new Double[] {Double.parseDouble(position[0]), Double.parseDouble(position[1])};
-
-                                    tMapView.addMarkerItem("CheckPoint"+ j, addMarker(new TMapPoint(dPosition[1], dPosition[0]), R.drawable.checkpoint, "경유지"));
-                                }
-                            }
-                        }
+                        totalLength = Double.parseDouble(totalDistance.item(0).getTextContent());
+                        totalLength = totalLength / 1000.0;
                         Log.i("debug", "+++++++++++++++++" + totalDistance.item(0).getTextContent());
                     }
                 });
@@ -404,6 +409,7 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.stop:
                 endDate = getCurrentDateInDate();
                 sendRecord();
+                Toast.makeText(getApplicationContext(), "저장완료", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -467,7 +473,6 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
 //                        getCurrentPlace();
 //                    }
 //                }, 0);
-                return address;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -513,7 +518,7 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
         JsonObject walkingRecord = setWalkingRecord(String.valueOf(departurePosition.getLatitude())
                 , String.valueOf(departurePosition.getLongitude()), String.valueOf(arrivalPosition.getLatitude())
                 , String.valueOf(arrivalPosition.getLongitude()),
-                totalTime.get(0), totalTime.get(1), "3.0");
+                totalTime.get(0), totalTime.get(1), String.valueOf(totalLength));
         Call<JsonObject> walkingData = mRetrofitAPI.storeWalkingRecord(walkingRecord, deviceId);
 
         Callback<JsonObject> mRetrofitCallback = new Callback<JsonObject>() {
