@@ -97,7 +97,29 @@ public class RecordActivity extends AppCompatActivity {
         String month = monthInput.getText().toString();
         EditText dayInput = (EditText) findViewById(R.id.day_input);
         String day = dayInput.getText().toString();
-        Call<JsonArray> walkingData = mRetrofitAPI.getWalkingRecord(deviceId, year, month, day);
+
+        Call<JsonArray> walkingData = null;
+
+        Boolean checking1 = month == null;
+        Boolean checking2 = day == "";
+
+        if(!year.equals("") && !month.equals("") && !day.equals(""))
+        {
+            walkingData = mRetrofitAPI.getWalkingRecordYmd(deviceId, year, month, day);
+        }
+        else if(!year.equals("") && !month.equals("") && day.equals(""))
+        {
+            walkingData = mRetrofitAPI.getWalkingRecordYm(deviceId, year, month);
+
+        }
+        else if(!year.equals("") && month.equals("") && day.equals(""))
+        {
+            walkingData = mRetrofitAPI.getWalkingRecordY(deviceId, year);
+        }
+        else
+        {
+            walkingData = mRetrofitAPI.getWalkingRecordY(deviceId, year);
+        }
 
         Callback<JsonArray> mRetrofitCallback = new Callback<JsonArray>() {
             @Override
@@ -126,7 +148,6 @@ public class RecordActivity extends AppCompatActivity {
                 Log.e("Err", t.getMessage());
             }
         };
-
         walkingData.enqueue(mRetrofitCallback);
     }
 

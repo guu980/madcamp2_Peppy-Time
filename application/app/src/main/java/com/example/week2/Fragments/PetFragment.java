@@ -1,5 +1,6 @@
 package com.example.week2.Fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -7,22 +8,28 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.week2.Data.Permission;
+import com.example.week2.Data.PetWalkingPoint;
+import com.example.week2.MainActivity;
 import com.example.week2.R;
 import com.example.week2.RecordActivity;
 import com.example.week2.Retrofit.RetrofitAPI;
@@ -31,11 +38,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.w3c.dom.Text;
+
 import java.io.BufferedInputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,6 +57,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.content.Context.LOCATION_SERVICE;
+import static android.content.Context.TELEPHONY_SERVICE;
+import static androidx.core.content.ContextCompat.getSystemService;
 import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
 public class PetFragment extends Fragment {
@@ -56,14 +71,18 @@ public class PetFragment extends Fragment {
     private String provider;
     private double longitude;
     private double latitude;
-    private double altitude;
 
     private Retrofit mRetrofit;
     private RetrofitAPI mRetrofitAPI;
 
+    private MainActivity mainActivity;
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mainActivity = (MainActivity) getActivity();
+
         v = inflater.inflate(R.layout.fragment_pet, container, false);
 
         Button walkBtn = v.findViewById(R.id.walk_btn);
@@ -85,6 +104,12 @@ public class PetFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        ProgressBar pointBar = (ProgressBar) v.findViewById(R.id.point_bar);
+        TextView pointText = (TextView) v. findViewById(R.id.point_text);
+        PetWalkingPoint petWalkingPoint = new PetWalkingPoint(getDeviceId(), pointBar, pointText);
+        List<String> currentDate = getCurrentDate();
+        petWalkingPoint.caclulatePoint(currentDate.get(1), currentDate.get(2));
 
         Location location = getLastKnownLocation();
         longitude = location.getLongitude();
@@ -226,6 +251,62 @@ public class PetFragment extends Fragment {
         };
 
         weatherData.enqueue(mRetrofitCallback);
+    }
+
+    public String getDeviceId()
+    {
+        TelephonyManager tm = (TelephonyManager) mainActivity.getSystemService(TELEPHONY_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(getContext(), Permission.getCertainPerm(4)) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    Activity#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for Activity#requestPermissions for more details.
+            return null;
+        }
+
+        String deviceId = tm.getDeviceId();
+        return deviceId;
+    }
+
+    private List<String> getCurrentDate()
+    {
+        List<String> dataList = new ArrayList<String>();
+
+        //Calculating the current date
+        Date currentTime = Calendar.getInstance().getTime();
+        SimpleDateFormat weekdayFormat = new SimpleDateFormat("EE", Locale.getDefault());
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd", Locale.getDefault());
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MM", Locale.getDefault());
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+        SimpleDateFormat hourFormat = new SimpleDateFormat("HH", Locale.getDefault());
+        SimpleDateFormat minFormat = new SimpleDateFormat("mm", Locale.getDefault());
+
+        String weekDay = weekdayFormat.format(currentTime);
+        String year = yearFormat.format(currentTime);
+        String month = monthFormat.format(currentTime);
+        String day = dayFormat.format(currentTime);
+        String hour = hourFormat.format(currentTime);
+        String min = minFormat.format(currentTime);
+
+        Log.v("CurretDating","Brought weekday = " + weekDay + "\n"
+                + "Brought year = " + year + "\n"
+                + "Brought month = " + month + "\n"
+                + "Brought day = " + day + "\n");
+
+        /* Return results(date intofrmation) by list<String> */
+
+        dataList.add(weekDay);
+        dataList.add(year);
+        dataList.add(month);
+        dataList.add(day);
+        dataList.add(hour);
+        dataList.add(min);
+
+        return dataList;
     }
 }
 

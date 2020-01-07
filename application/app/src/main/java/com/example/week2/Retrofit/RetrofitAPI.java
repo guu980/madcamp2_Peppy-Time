@@ -19,11 +19,20 @@ public interface RetrofitAPI {
                                        @Query("lon") String lon,
                                        @Query("APPID") String APPID);
 
-    @GET("get/walking")
-    Call<JsonArray> getWalkingRecord(@Query("id") String id,
+    @GET("get/walking/ymd")
+    Call<JsonArray> getWalkingRecordYmd(@Query("id") String id,
                                      @Query("year") String year,
                                      @Query("month") String month,
                                      @Query("day") String day);
+
+    @GET("get/walking/ym")
+    Call<JsonArray> getWalkingRecordYm(@Query("id") String id,
+                                        @Query("year") String year,
+                                        @Query("month") String month);
+
+    @GET("get/walking/y")
+    Call<JsonArray> getWalkingRecordY(@Query("id") String id,
+                                       @Query("year") String year);
 
     @POST("push/walking")
     Call<JsonObject> storeWalkingRecord(@Body JsonObject data, @Query("id") String id);
@@ -31,6 +40,11 @@ public interface RetrofitAPI {
     @GET("delete/record")
     Call <JsonObject> removeWalkingREcord(@Query("id") String id,
                                           @Query("dbid") String dbid);
+
+    @GET("get/walking/forPoint")
+    Call<JsonArray> getWalkingRecordforPoint(@Query("id") String id,
+                                             @Query("year") String year,
+                                             @Query("month") String month);
 
 
 //    String appkey = "c41182fa3633071e849d3e55fd1f5231";
