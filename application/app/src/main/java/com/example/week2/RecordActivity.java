@@ -64,14 +64,6 @@ public class RecordActivity extends AppCompatActivity {
                 getRecord();
             }
         });
-
-        Button sendDataBtn = (Button) findViewById(R.id.send_button);
-        sendDataBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendRecord();
-            }
-        });
     }
 
     private void setWalkingRetrofitInit() {
