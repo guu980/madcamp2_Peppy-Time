@@ -1,0 +1,48 @@
+https://dapi.kakao.com/v2/local/geo/transcoord.json?x=36.374042&y=127.3658783&input_coord=WGS84&output_coord=TM
+
+1. 오늘의 산책내용 서버에 저장
+-안드로이드 스튜디오에서 POST
+-query 에 id=device id 로 해서 보내기
+-req.body 를 json 으로 보낸다.
+{
+	start : {
+		lat : 10
+		lon: 29
+	}
+	
+	end : {
+		lat : 20
+		lon: 30
+	}
+	date : { //시작 시각
+		year: 2020
+		month: 1
+		day: 8
+		hour: 10
+		min: 28
+	}
+	/*
+	time : { //총 산책시간 아마 못할듯?
+		hours: 1
+		mins: 10
+	}
+	*/
+	distance: 10 (km 단위로) ( 총 산책 거리 )
+}
+그러면 서버에서는
+{
+	keyYear: 2020
+	keyMonth: 1
+	keyDay: 8
+	walkingData: { ~~~}
+}
+이와 같이 저장됨
+
+2. 산책내용 몇년, 몇월, 몇일!!! 단위로 불러오기
+-Android studio 에서 GET
+-query 에 id=deviceID, year= 찾고자 하는 년도, month=찾고자하는 달, day=찾고자 하는 날짜 로 해서 보내기
+
+그러면 서버에서는 keyYear 과 year, keyMonth 과 month, keyDay와 day 가 일치하는지 확인해서 맞는놈들 찾아서
+jsonArray 로 반환한다.
+
+-그러면 Android Studio 에서는 받아온 json array 를 파싱해서 해당날짜에 맞는 데이터들을 화면에 표시해준다.

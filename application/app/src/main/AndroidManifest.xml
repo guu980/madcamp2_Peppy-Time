@@ -9,7 +9,11 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name = "android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+<<<<<<< HEAD
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+=======
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+>>>>>>> 053322d0054836395b5575730c74a4513dd7027a
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
@@ -27,8 +31,8 @@
             android:required="false"/>
 
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCnDFDyd4ODMgpIL_FCLtMyIgHvbIzzDLM" />
+            android:name="com.kakao.sdk.AppKey"
+            android:value="@string/kakao_app_key" />
 
 <!--        <meta-data-->
 <!--            android:name="com.google.android.maps.geo.API_KEY"-->
@@ -45,6 +49,7 @@
         <activity android:name="com.example.week2.TripDetailActivity"/>
         <activity android:name="com.example.week2.DetailActivity"/>
         <activity android:name=".WalkActivity"/>
+        <activity android:name=".RecordActivity"/>
 
     </application>
 

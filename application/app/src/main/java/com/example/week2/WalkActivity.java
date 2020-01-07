@@ -392,4 +392,6 @@ public class WalkActivity extends AppCompatActivity implements View.OnClickListe
             super.onPostExecute(s);
         }
     }
+
+
 }
