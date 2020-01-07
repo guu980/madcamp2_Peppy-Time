@@ -2,7 +2,9 @@ package com.example.week2.Fragments;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -100,7 +102,6 @@ public class ContactFragment extends Fragment {
             }
         });
 
-        /* Post Version
         Button btn = v.findViewById(R.id.add_button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,7 +114,6 @@ public class ContactFragment extends Fragment {
                 }
             }
         });
-        */
         return v;
     }
 

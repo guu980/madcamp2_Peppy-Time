@@ -30,8 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/month_input"
-            android:id="@+id/button_layout"
-            >
+            android:id="@+id/button_layout">
             <EditText
                 android:id="@+id/day_input"
                 android:layout_width="match_parent"
@@ -49,19 +48,11 @@
                 />
         </RelativeLayout>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/button_layout"
-            android:text="send data for test"
-            android:id="@+id/send_button"
-            />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/walking_record_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/send_button"
+            android:layout_below="@+id/button_layout"
             android:layout_above="@+id/bottm_of_screen"
             />
 
@@ -75,6 +66,4 @@
             />
 
     </RelativeLayout>
-
-
 </RelativeLayout>
