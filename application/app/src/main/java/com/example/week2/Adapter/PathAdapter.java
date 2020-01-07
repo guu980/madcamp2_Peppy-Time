@@ -28,6 +28,10 @@ public class PathAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.path = path;
     }
 
+    public void setAdapter(ArrayList<String> path) {
+        this.path = path;
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -43,6 +47,9 @@ public class PathAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
+        if (path == null) {
+            return 0;
+        }
         return path.size();
     }
 }
