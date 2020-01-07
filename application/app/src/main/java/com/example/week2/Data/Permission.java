@@ -9,6 +9,8 @@ public class Permission {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_CONTACTS,
             Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
     };
 
     public static String[] getPermissions() {

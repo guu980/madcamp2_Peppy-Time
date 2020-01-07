@@ -18,4 +18,6 @@ public class WalkActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_walk);
     }
+
+
 }

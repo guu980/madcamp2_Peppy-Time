@@ -14,4 +14,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="기록확인" />
+
+
+    <ImageView
+        android:id="@+id/weatherImage"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        />
 </LinearLayout>
